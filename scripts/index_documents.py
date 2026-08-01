@@ -76,4 +76,4 @@ print("=" * 60)
 print(f"Collection : {settings.QDRANT_COLLECTION}")
 print(f"Documents  : {len(documents)}")
 print(f"Chunks     : {len(chunks)}")
-print("=" * 60)s
+print("=" * 60)
