@@ -24,7 +24,7 @@ class Settings:
 
     if IS_COLAB:
         GROQ_API_KEY = userdata.get("GROQ_API_KEY")
-        QDRANT_URL = userdata.get("QDRANT_URL")
+        QDRANT_URL = userdata.get("QDRANT_UR")
         QDRANT_API_KEY = userdata.get("QDRANT_API_KEY")
     else:
         GROQ_API_KEY = os.getenv("GROQ_API_KEY")
