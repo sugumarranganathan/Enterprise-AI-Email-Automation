@@ -1,0 +1,39 @@
+Multi-Agent Workflow
+
+| Step | Agent                | Responsibility                            |
+| ---- | -------------------- | ----------------------------------------- |
+| 1    | Email Listener Agent | Receives customer email                   |
+| 2    | Classification Agent | Classifies email category                 |
+| 3    | Priority Agent       | Determines urgency                        |
+| 4    | Sentiment Agent      | Detects customer sentiment                |
+| 5    | Reader Agent         | Extracts summary, intent and action items |
+| 6    | Knowledge Agent      | Retrieves company knowledge from Qdrant   |
+| 7    | Policy Agent         | Applies company policy                    |
+| 8    | Response Agent       | Generates AI response                     |
+| 9    | Reviewer Agent       | Improves response quality                 |
+| 10   | Formatter Agent      | Formats professional email                |
+| 11   | Approval Agent       | Human approval (HITL)                     |
+| 12   | Email Sender Agent   | Sends email using Gmail API               |
+| 13   | History Logger       | Stores workflow history                   |
+
+
+===========
+
+Project Modules Summary
+
+| Module    | Responsibility                                     |
+| --------- | -------------------------------------------------- |
+| Agents    | AI decision-making and email processing            |
+| LangGraph | Workflow orchestration                             |
+| RAG       | Knowledge retrieval from Vector Database           |
+| Qdrant    | Stores company knowledge embeddings                |
+| Gmail API | Reads and sends emails                             |
+| Gradio UI | Enterprise web dashboard                           |
+| Database  | Stores workflow history and logs                   |
+| Config    | Centralized prompts and settings                   |
+| Tests     | Agent and workflow validation                      |
+| Utilities | Logging, configuration and shared helper functions |
+
+
+=====
+
