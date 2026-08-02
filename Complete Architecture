@@ -1,0 +1,47 @@
+                Customer Email
+                       │
+                       ▼
+               LangGraph Orchestrator
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+ Email Listener   Classification   Priority
+        │
+        ▼
+ Sentiment
+        │
+        ▼
+ Reader Agent
+        │
+        ▼
+ Knowledge Agent
+        │
+        ▼
+      LangChain
+        │
+        ▼
+   Prompt + Groq LLM
+        │
+        ▼
+   Qdrant Retrieval
+        │
+        ▼
+ Policy Agent
+        │
+        ▼
+ Response Agent
+        │
+        ▼
+ Reviewer
+        │
+        ▼
+ Formatter
+        │
+        ▼
+ Approval
+        │
+        ▼
+ Gmail Sender
+        │
+        ▼
+ History Logger
