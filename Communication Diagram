@@ -93,3 +93,87 @@ Communication Diagram
                    │
                    ▼
               Workflow Ends
+
+
+============
+
+5. How does LangGraph know what to pass?
+
+Every agent has the same function signature:
+
+def reader_agent(state):
+
+    ...
+
+    return state
+
+Example:
+
+Reader Agent
+
+email = state["email"]
+
+summary = llm(...)
+
+state["summary"] = summary
+
+return state
+
+Classification Agent
+
+email = state["email"]
+
+category = llm(...)
+
+state["category"] = category
+
+return state
+
+Policy Agent
+
+knowledge = state["knowledge"]
+
+policy = llm(...)
+
+state["policy_result"] = policy
+
+return state
+
+Each agent:
+
+reads the fields it needs from state
+writes new fields back into state
+returns the updated state
+
+LangGraph automatically passes this updated state to the next agent in the workflow.
+
+==========
+
+Overall Architecture
+                    ┌─────────────────────────────┐
+                    │      LangGraph              │
+                    │   (Workflow Orchestrator)   │
+                    └─────────────┬───────────────┘
+                                  │
+                     Shared EmailState Dictionary
+                                  │
+      ┌──────────────────────────────────────────────────────┐
+      │ email, summary, category, priority, sentiment, ...   │
+      └──────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+ Listener → Classification → Priority → Sentiment → Reader
+                                  │
+                                  ▼
+                     Knowledge (Qdrant RAG)
+                                  │
+                                  ▼
+          Policy → Response → Reviewer → Formatter
+                                  │
+                                  ▼
+                     Approval → Email Sender
+                                  │
+                                  ▼
+                         History Logger → END
+
+This is exactly how Enterprise AI Email Automation project connects all agents and how they communicate through the shared EmailState managed by LangGraph.
