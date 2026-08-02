@@ -1,43 +1,50 @@
 """
 History Logger Agent
 
-(Current Version)
-
-Later
-
-SQLite
-
-PostgreSQL
-
-Analytics
+Stores workflow results for auditing.
 """
+
+from datetime import datetime
 
 from utils.logger import logger
 
 
 def history_logger(state):
 
-    logger.info("History Logger Started")
+    logger.info("=" * 60)
+    logger.info("===== History Logger Started =====")
+    logger.info("=" * 60)
 
-    """
-    Later
+    history = {
 
-    Save
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 
-    Sender
+        "sender": state.get("sender"),
 
-    Subject
+        "subject": state.get("subject"),
 
-    Category
+        "summary": state.get("summary"),
 
-    Priority
+        "intent": state.get("intent"),
 
-    Final Email
+        "priority": state.get("priority"),
 
-    Time
+        "sentiment": state.get("sentiment"),
 
-    Status
+        "approval_status": state.get("approval_status"),
 
-    """
+        "send_status": state.get("send_status"),
+
+        "message_id": state.get("message_id"),
+
+    }
+
+    logger.info(history)
+
+    state["history"] = history
+
+    logger.info("=" * 60)
+    logger.info("===== History Logger Completed =====")
+    logger.info("=" * 60)
 
     return state
