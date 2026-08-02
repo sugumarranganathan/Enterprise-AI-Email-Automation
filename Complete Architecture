@@ -45,3 +45,29 @@
         │
         ▼
  History Logger
+
+
+=========
+
+Who is the orchestrator in your project?
+
+
+
+LangGraph is the workflow orchestrator. It manages the execution of all AI agents, maintains the shared state, and controls the end-to-end workflow.
+LangChain is used inside individual agents for prompt management, LLM interaction, and RAG integration, 
+while Groq provides the language model, Qdrant stores vector embeddings, Gmail API handles email communication, and Gradio provides the user interface.
+
+========
+
+| Technology                | Responsibility                                   |
+| ------------------------- | ------------------------------------------------ |
+| **LangGraph**             | ✅ Multi-Agent Workflow Orchestrator              |
+| **LangChain**             | Prompt Engineering, Chains, LLM Integration, RAG |
+| **Groq**                  | Large Language Model                             |
+| **Qdrant**                | Vector Database (Knowledge Base)                 |
+| **Sentence Transformers** | Embedding Generation                             |
+| **Gmail API**             | Email Reading & Sending                          |
+| **Gradio**                | Enterprise Dashboard / UI                        |
+
+
+======
