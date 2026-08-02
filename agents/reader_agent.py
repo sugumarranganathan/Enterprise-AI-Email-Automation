@@ -32,15 +32,18 @@ Return ONLY valid JSON.
 
 Example:
 
-{
+{{
     "summary": "...",
     "intent": "...",
     "action_items": "..."
-}
+}}
 
-Do not return markdown.
-Do not use ```json.
-Do not add explanations.
+Rules:
+
+- Return ONLY JSON.
+- Do not use markdown.
+- Do not use ```json.
+- Do not add explanations.
 """
 
         ),
@@ -63,11 +66,13 @@ chain = prompt | llm
 
 def reader_agent(state):
 
+    logger.info("=" * 60)
     logger.info("===== Reader Agent Started =====")
+    logger.info("=" * 60)
 
     try:
 
-        email = state.get("email", "")
+        email = state.get("email", "").strip()
 
         if not email:
             raise ValueError("Email content is empty.")
@@ -82,7 +87,16 @@ def reader_agent(state):
 
         )
 
-        data = json.loads(result.content)
+        content = result.content.strip()
+
+        # Remove markdown if model accidentally returns it
+        if content.startswith("```json"):
+            content = content.replace("```json", "").replace("```", "").strip()
+
+        elif content.startswith("```"):
+            content = content.replace("```", "").strip()
+
+        data = json.loads(content)
 
         state["summary"] = data.get("summary", "")
         state["intent"] = data.get("intent", "")
@@ -90,6 +104,9 @@ def reader_agent(state):
 
         logger.info(f"Summary : {state['summary']}")
         logger.info(f"Intent  : {state['intent']}")
+        logger.info(f"Action Items : {state['action_items']}")
+
+        state["reader_error"] = None
 
     except Exception as e:
 
@@ -100,6 +117,8 @@ def reader_agent(state):
         state["action_items"] = ""
         state["reader_error"] = str(e)
 
+    logger.info("=" * 60)
     logger.info("===== Reader Agent Completed =====")
+    logger.info("=" * 60)
 
     return state
