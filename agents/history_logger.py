@@ -15,33 +15,45 @@ def history_logger(state):
     logger.info("===== History Logger Started =====")
     logger.info("=" * 60)
 
-    history = {
+    try:
 
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        history = {
 
-        "sender": state.get("sender"),
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 
-        "subject": state.get("subject"),
+            "sender": state.get("sender"),
 
-        "summary": state.get("summary"),
+            "subject": state.get("subject"),
 
-        "intent": state.get("intent"),
+            "summary": state.get("summary"),
 
-        "priority": state.get("priority"),
+            "intent": state.get("intent"),
 
-        "sentiment": state.get("sentiment"),
+            "priority": state.get("priority"),
 
-        "approval_status": state.get("approval_status"),
+            "sentiment": state.get("sentiment"),
 
-        "send_status": state.get("send_status"),
+            "approval_status": state.get("approval_status"),
 
-        "message_id": state.get("message_id"),
+            "send_status": state.get("send_status"),
 
-    }
+            "message_id": state.get("message_id"),
 
-    logger.info(history)
+            "thread_id": state.get("thread_id"),
 
-    state["history"] = history
+        }
+
+        state["history"] = history
+
+        logger.info("History record created successfully.")
+        logger.info(history)
+
+    except Exception as e:
+
+        logger.exception("History Logger Failed")
+
+        state["history"] = None
+        state["history_error"] = str(e)
 
     logger.info("=" * 60)
     logger.info("===== History Logger Completed =====")
