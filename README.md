@@ -16,7 +16,7 @@ https://2a8d48180d9511d4e1.gradio.live/
 
 ---
 
-# 📌 Overview
+#  Overview
 
 Enterprise AI Email Automation is an intelligent **Multi-Agent AI system** that automatically analyzes customer emails, retrieves relevant company knowledge, applies business policies, generates professional responses, and supports **Human-in-the-Loop approval** before sending emails.
 
@@ -24,7 +24,7 @@ The project demonstrates how **Agentic AI** can automate enterprise email operat
 
 ---
 
-# 🚨 Problem Statement
+#  Problem Statement
 
 Modern organizations receive hundreds or thousands of customer emails every day.
 
@@ -52,7 +52,7 @@ As business grows, these problems become increasingly difficult to manage.
 
 ---
 
-# 💡 Why Enterprise Email Automation?
+#  Why Enterprise Email Automation?
 
 Enterprise AI Email Automation solves these challenges by introducing an intelligent AI workflow.
 
@@ -73,7 +73,7 @@ This significantly improves productivity while ensuring policy compliance and cu
 
 ---
 
-# 🎯 Objectives
+# Objectives
 
 The primary goals of this project are:
 
@@ -196,27 +196,6 @@ This approach improves safety, compliance, and response quality.
 
 ---
 
-# ✨ Features
-
-- Multi-Agent AI Workflow
-- LangGraph Orchestration
-- LangChain Integration
-- Groq LLM
-- Qdrant Vector Database
-- Retrieval-Augmented Generation (RAG)
-- Gmail API Integration
-- Professional Email Generation
-- Human Approval Workflow
-- Enterprise Dashboard
-- Sentiment Analysis
-- Priority Detection
-- Intent Detection
-- Knowledge Retrieval
-- Policy Compliance
-- Workflow Logging
-- Gradio Web Interface
-
----
 
 # 🖥 Dashboard
 
@@ -279,23 +258,7 @@ Enterprise-AI-Email-Automation/
 
 ---
 
-# 🚀 Future Enhancements
 
-- Microsoft Outlook Integration
-- Slack Notifications
-- Teams Integration
-- Multi-language Support
-- Voice Email Assistant
-- Analytics Dashboard
-- Role-Based Access Control
-- Customer CRM Integration
-- Multi-LLM Support
-- Agent Monitoring Dashboard
-- AI Cost Tracking
-- Email Analytics
-- Fine-tuned Enterprise Models
-
----
 
 # 🎓 Learning Outcomes
 
@@ -314,16 +277,7 @@ This project demonstrates:
 
 ---
 
-# 👨‍💻 Author
+# 👨‍💻 Developed by
 
-**Sugumar R**
-
-MBA | AI & Data Analytics Enthusiast
-
+**R.Sugumar, M.B.A**
 📧 Email: contact.sugumarai@gmail.com
-
-GitHub: https://github.com/sugumarranganathan
-
----
-
-# ⭐ If you found this project useful, please consider giving it a Star.
