@@ -1,30 +1,39 @@
 """
 Knowledge Agent
+
+Retrieve relevant knowledge from Qdrant.
 """
 
 from rag.retriever import retrieve
-
 from utils.logger import logger
 
 
 def knowledge_agent(state):
 
-    logger.info("Knowledge Agent Started")
+    logger.info("===== Knowledge Agent Started =====")
 
-    docs = retrieve(state["email"])
-
-    context = "\n\n".join(
-
-        [
-
-            doc.page_content
-
-            for doc in docs
-
-        ]
-
+    # Prefer intent; fall back to email
+    query = (
+        state.get("intent")
+        or state.get("email")
+        or ""
     )
 
-    state["retrieved_context"] = context
+    if not query:
+        logger.warning("No query available for knowledge retrieval.")
+        state["knowledge"] = ""
+        return state
+
+    docs = retrieve(query)
+
+    context = "\n\n".join(
+        doc.page_content
+        for doc in docs
+    )
+
+    state["knowledge"] = context
+
+    logger.info(f"Retrieved {len(docs)} document(s).")
+    logger.info("===== Knowledge Agent Completed =====")
 
     return state
