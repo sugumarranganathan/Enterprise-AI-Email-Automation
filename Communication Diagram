@@ -1,0 +1,95 @@
+Communication Diagram
+---------------------
+
+
+                        Customer Email
+                              │
+                              ▼
+                  Email Listener Agent
+                              │
+               writes: email into EmailState
+                              │
+                              ▼
+               Classification Agent
+                 reads: email
+                 writes: category
+                              │
+                              ▼
+                  Priority Agent
+                 reads: email
+                 writes: priority
+                              │
+                              ▼
+                 Sentiment Agent
+                 reads: email
+                 writes: sentiment
+                              │
+                              ▼
+                   Reader Agent
+         reads: email
+         writes:
+             • summary
+             • intent
+             • action_items
+                              │
+                              ▼
+                 Knowledge Agent
+      reads:
+          summary
+          intent
+      retrieves from Qdrant
+      writes:
+          knowledge
+                              │
+                              ▼
+                   Policy Agent
+      reads:
+          knowledge
+      writes:
+          policy_result
+                              │
+                              ▼
+                 Response Agent
+      reads:
+          summary
+          knowledge
+          policy_result
+      writes:
+          draft_reply
+                              │
+                              ▼
+                  Reviewer Agent
+      reads:
+          draft_reply
+      writes:
+          reviewed_reply
+                              │
+                              ▼
+                  Formatter Agent
+      reads:
+          reviewed_reply
+      writes:
+          final_email
+                              │
+                              ▼
+                  Approval Agent
+      reads:
+          final_email
+      writes:
+          approval_status
+                              │
+                   ┌──────────┴──────────┐
+                   │                     │
+             APPROVED               REJECTED
+                   │                     │
+                   ▼                     ▼
+             Email Sender          Human Review
+                   │
+             writes:
+             send_status
+                   │
+                   ▼
+             History Logger
+                   │
+                   ▼
+              Workflow Ends
