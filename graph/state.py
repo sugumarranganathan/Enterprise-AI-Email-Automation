@@ -7,45 +7,76 @@ Every agent reads from and writes to this state.
 from typing import TypedDict
 
 
-class EmailState(TypedDict):
+class EmailState(TypedDict, total=False):
 
-    # Raw email
+    # --------------------------------------------------
+    # Email
+    # --------------------------------------------------
+
     email: str
-
-    # Email metadata
     sender: str
     subject: str
-    send_status: str
+
     thread_id: str
     message_id: str
 
-    # Classification
-    category: str
-    priority: str
-    sentiment: str
-
+    # --------------------------------------------------
     # Reader Agent
+    # --------------------------------------------------
+
     summary: str
     intent: str
     action_items: str
 
-    # RAG
-    retrieved_context: str
+    # --------------------------------------------------
+    # Classification
+    # --------------------------------------------------
 
-    # Policy Agent
+    category: str
+    priority: str
+    sentiment: str
+
+    # --------------------------------------------------
+    # Knowledge (RAG)
+    # --------------------------------------------------
+
+    knowledge: str
+    retrieved_context: str
+    knowledge_docs: list
+
+    # --------------------------------------------------
+    # Policy
+    # --------------------------------------------------
+
+    policy: str
     policy_result: str
 
+    # --------------------------------------------------
     # Response
+    # --------------------------------------------------
+
     draft_reply: str
-
-    # Reviewer
     reviewed_reply: str
-
-    # Formatter
     final_email: str
 
+    # --------------------------------------------------
     # Approval
-    approval_status: str
+    # --------------------------------------------------
 
-    # Send status
+    approval_status: str
+    approval_reason: str
+    auto_send: bool
+
+    # --------------------------------------------------
+    # Email Sender
+    # --------------------------------------------------
+
     send_status: str
+    send_error: str
+    sent_time: str
+
+    # --------------------------------------------------
+    # History
+    # --------------------------------------------------
+
+    history: dict
