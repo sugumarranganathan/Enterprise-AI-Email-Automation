@@ -1,7 +1,7 @@
 """
 Email Sender Agent
 
-Send the final email using Gmail.
+Sends the final email using Gmail.
 """
 
 from datetime import datetime
@@ -12,7 +12,9 @@ from utils.logger import logger
 
 def email_sender(state):
 
+    logger.info("=" * 60)
     logger.info("===== Email Sender Agent Started =====")
+    logger.info("=" * 60)
 
     try:
 
@@ -32,14 +34,19 @@ def email_sender(state):
         if not to_email:
             raise ValueError("Recipient email is missing.")
 
-        if not subject:
-            subject = "Customer Support"
-
         if not body:
             raise ValueError("Final email body is empty.")
 
+        if not subject:
+            subject = "Customer Support"
+
         logger.info(f"Recipient : {to_email}")
         logger.info(f"Subject   : Re: {subject}")
+
+        if thread_id:
+            logger.info(f"Thread ID : {thread_id}")
+        else:
+            logger.info("Thread ID : New Conversation")
 
         # =====================================================
         # Send Email
@@ -58,7 +65,7 @@ def email_sender(state):
         )
 
         # =====================================================
-        # Update State
+        # Update Workflow State
         # =====================================================
 
         state["send_status"] = "Sent"
@@ -77,7 +84,6 @@ def email_sender(state):
         state["send_error"] = None
 
         logger.info("Email sent successfully.")
-
         logger.info(f"Message ID : {state['message_id']}")
 
     except Exception as e:
@@ -92,6 +98,8 @@ def email_sender(state):
 
         state["send_error"] = str(e)
 
+    logger.info("=" * 60)
     logger.info("===== Email Sender Agent Completed =====")
+    logger.info("=" * 60)
 
     return state
