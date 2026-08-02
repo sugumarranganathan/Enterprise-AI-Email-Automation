@@ -1,0 +1,306 @@
+all agents are connected in one place only:
+
+✅ graph/workflow.py
+
+This file is the heart of your project. It creates the LangGraph workflow and defines how every agent communicates with the next.
+
+1. How all agents are connected
+from langgraph.graph import StateGraph
+from graph.state import EmailState
+
+workflow = StateGraph(EmailState)
+
+workflow.add_node("listener", email_listener)
+workflow.add_node("classification", classification_agent)
+workflow.add_node("priority", priority_agent)
+workflow.add_node("sentiment", sentiment_agent)
+workflow.add_node("reader", reader_agent)
+workflow.add_node("knowledge", knowledge_agent)
+workflow.add_node("policy", policy_agent)
+workflow.add_node("responder", responder_agent)
+workflow.add_node("reviewer", reviewer_agent)
+workflow.add_node("formatter", formatter_agent)
+workflow.add_node("approval", approval_agent)
+workflow.add_node("sender", email_sender)
+workflow.add_node("history", history_logger)
+
+Here,
+
+add_node() registers each AI agent.
+Every agent becomes a node in the LangGraph workflow.
+
+======
+
+2. How the agents communicate
+
+This section connects one agent to the next:
+
+workflow.set_entry_point("listener")
+
+workflow.add_edge("listener", "classification")
+workflow.add_edge("classification", "priority")
+workflow.add_edge("priority", "sentiment")
+workflow.add_edge("sentiment", "reader")
+workflow.add_edge("reader", "knowledge")
+workflow.add_edge("knowledge", "policy")
+workflow.add_edge("policy", "responder")
+workflow.add_edge("responder", "reviewer")
+workflow.add_edge("reviewer", "formatter")
+workflow.add_edge("formatter", "approval")
+workflow.add_edge("approval", "sender")
+workflow.add_edge("sender", "history")
+workflow.add_edge("history", END)
+
+graph = workflow.compile()
+
+add_edge() tells LangGraph:
+
+"After Agent A finishes, execute Agent B."
+
+======
+
+3. How data flows between agents
+
+Every agent receives the same shared object:
+
+EmailState
+
+Example:
+
+Listener Agent
+
+↓
+
+state["email"]
+
+↓
+
+Classification Agent
+
+reads
+
+state["email"]
+
+writes
+
+state["category"]
+
+↓
+
+Priority Agent
+
+reads
+
+state["email"]
+
+writes
+
+state["priority"]
+
+↓
+
+Reader Agent
+
+reads
+
+state["email"]
+
+writes
+
+state["summary"]
+state["intent"]
+
+↓
+
+Knowledge Agent
+
+reads
+
+summary
+intent
+
+writes
+
+knowledge
+
+↓
+
+Policy Agent
+
+reads
+
+knowledge
+
+writes
+
+policy_result
+
+↓
+
+Response Agent
+
+reads
+
+summary
+policy
+
+knowledge
+
+writes
+
+draft_reply
+
+↓
+
+Reviewer
+
+reads
+
+draft_reply
+
+writes
+
+reviewed_reply
+
+↓
+
+Formatter
+
+reads
+
+reviewed_reply
+
+writes
+
+final_email
+
+↓
+
+Approval
+
+reads
+
+final_email
+
+writes
+
+approval_status
+
+↓
+
+Email Sender
+
+reads
+
+approval_status
+
+final_email
+
+writes
+
+send_status
+
+↓
+
+History Logger
+
+stores everything
+
+============
+
+4. Communication Diagram
+                        Customer Email
+                              │
+                              ▼
+                  Email Listener Agent
+                              │
+               writes: email into EmailState
+                              │
+                              ▼
+               Classification Agent
+                 reads: email
+                 writes: category
+                              │
+                              ▼
+                  Priority Agent
+                 reads: email
+                 writes: priority
+                              │
+                              ▼
+                 Sentiment Agent
+                 reads: email
+                 writes: sentiment
+                              │
+                              ▼
+                   Reader Agent
+         reads: email
+         writes:
+             • summary
+             • intent
+             • action_items
+                              │
+                              ▼
+                 Knowledge Agent
+      reads:
+          summary
+          intent
+      retrieves from Qdrant
+      writes:
+          knowledge
+                              │
+                              ▼
+                   Policy Agent
+      reads:
+          knowledge
+      writes:
+          policy_result
+                              │
+                              ▼
+                 Response Agent
+      reads:
+          summary
+          knowledge
+          policy_result
+      writes:
+          draft_reply
+                              │
+                              ▼
+                  Reviewer Agent
+      reads:
+          draft_reply
+      writes:
+          reviewed_reply
+                              │
+                              ▼
+                  Formatter Agent
+      reads:
+          reviewed_reply
+      writes:
+          final_email
+                              │
+                              ▼
+                  Approval Agent
+      reads:
+          final_email
+      writes:
+          approval_status
+                              │
+                   ┌──────────┴──────────┐
+                   │                     │
+             APPROVED               REJECTED
+                   │                     │
+                   ▼                     ▼
+             Email Sender          Human Review
+                   │
+             writes:
+             send_status
+                   │
+                   ▼
+             History Logger
+                   │
+                   ▼
+              Workflow Ends
+
+
+=============
+
