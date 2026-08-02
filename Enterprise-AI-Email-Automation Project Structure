@@ -1,0 +1,67 @@
+| Folder / File                         | Purpose / Description                                                                                             |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Images/**                           | Stores screenshots, architecture diagrams, workflow images, README images and project assets.                     |
+| **VectorDB/**                         | Backup of vector database files (Qdrant export / embeddings / metadata). Useful for restoring the knowledge base. |
+| **agents/**                           | Contains all AI Agent implementations used in the LangGraph workflow.                                             |
+| ├── approval_agent.py                 | Performs Human-in-the-Loop approval decision before email sending.                                                |
+| ├── classification_agent.py           | Identifies email category (Refund, Complaint, Warranty, Billing, etc.).                                           |
+| ├── email_listener.py                 | Receives customer emails from Gmail or UI input.                                                                  |
+| ├── email_sender.py                   | Sends approved emails through Gmail API.                                                                          |
+| ├── formatter_agent.py                | Formats AI response into a professional business email.                                                           |
+| ├── history_logger.py                 | Logs workflow execution and email history.                                                                        |
+| ├── knowledge_agent.py                | Retrieves relevant company knowledge from the Qdrant Vector Database (RAG).                                       |
+| ├── policy_agent.py                   | Applies company policies based on retrieved knowledge.                                                            |
+| ├── priority_agent.py                 | Detects urgency level (Low, Medium, High, Urgent).                                                                |
+| ├── reader_agent.py                   | Reads the email and extracts summary, intent and action items.                                                    |
+| ├── responder_agent.py                | Generates the AI draft response.                                                                                  |
+| ├── reviewer_agent.py                 | Reviews and improves the generated response.                                                                      |
+| ├── sentiment_agent.py                | Performs sentiment analysis (Positive, Neutral, Negative).                                                        |
+| **config/**                           | Central configuration files for the application.                                                                  |
+| ├── prompts.py                        | Stores all centralized LLM prompts used by the agents.                                                            |
+| ├── settings.py                       | Stores application settings, model names, API configurations and constants.                                       |
+| **database/**                         | Database-related resources.                                                                                       |
+| ├── schema.sql                        | SQL schema for workflow history, approvals and email logging.                                                     |
+| **graph/**                            | LangGraph workflow implementation.                                                                                |
+| ├── workflow.py                       | Builds and compiles the complete LangGraph workflow.                                                              |
+| ├── state.py                          | Defines the shared `EmailState` used by every agent.                                                              |
+| ├── **init**.py                       | Exposes the graph package for simplified imports.                                                                 |
+| **knowledge/**                        | Company knowledge documents used for Retrieval-Augmented Generation (RAG).                                        |
+| ├── refund_policy.pdf                 | Company refund policy.                                                                                            |
+| ├── warranty_policy.pdf *(optional)*  | Warranty guidelines.                                                                                              |
+| ├── shipping_policy.pdf *(optional)*  | Shipping rules and delivery policies.                                                                             |
+| ├── FAQ documents *(optional)*        | Frequently asked questions and business documents.                                                                |
+| **prompts/**                          | Additional prompt templates (if prompts are organized into separate files).                                       |
+| **rag/**                              | Retrieval-Augmented Generation implementation.                                                                    |
+| ├── retriever.py                      | Retrieves relevant documents from Qdrant Vector Database.                                                         |
+| ├── indexer.py *(optional)*           | Builds vector embeddings from PDF knowledge.                                                                      |
+| **scripts/**                          | Utility scripts used during development.                                                                          |
+| ├── index_documents.py                | Reads PDFs and indexes them into Qdrant.                                                                          |
+| ├── create_collection.py *(optional)* | Creates the Qdrant collection.                                                                                    |
+| ├── backup_vectors.py *(optional)*    | Creates a backup of vector data.                                                                                  |
+| **tests/**                            | Testing files.                                                                                                    |
+| ├── test_agents.py                    | Tests every AI agent individually.                                                                                |
+| ├── test_workflow.py                  | Tests the complete LangGraph workflow end-to-end.                                                                 |
+| **tools/**                            | Helper modules and external integrations.                                                                         |
+| ├── database.py                       | SQLite database helper functions.                                                                                 |
+| ├── gmail_reader.py                   | Reads emails using Gmail API.                                                                                     |
+| ├── gmail_sender.py                   | Sends emails using Gmail API.                                                                                     |
+| ├── html_formatter.py                 | Converts generated email into professional HTML format.                                                           |
+| ├── qdrant_tool.py *(optional)*       | Qdrant database helper functions.                                                                                 |
+| ├── **init**.py                       | Package initialization for tools.                                                                                 |
+| **ui/**                               | User Interface components.                                                                                        |
+| ├── dashboard.py                      | Creates the Enterprise Gradio dashboard.                                                                          |
+| ├── components.py                     | Reusable Gradio UI components.                                                                                    |
+| ├── **init**.py                       | UI package initialization.                                                                                        |
+| **utils/**                            | Common utility modules.                                                                                           |
+| ├── config.py                         | Loads environment variables and configuration.                                                                    |
+| ├── groq_client.py                    | Initializes Groq LLM client.                                                                                      |
+| ├── logger.py                         | Central logging utility for the application.                                                                      |
+| ├── helpers.py *(optional)*           | Common helper functions.                                                                                          |
+| **.env.example**                      | Example environment variables for project setup.                                                                  |
+| **.gitignore**                        | Files and folders ignored by Git.                                                                                 |
+| **LICENSE**                           | Project license (MIT).                                                                                            |
+| **README.md**                         | Complete project documentation and usage guide.                                                                   |
+| **app.py**                            | Main application entry point that launches the Enterprise AI Email Automation system.                             |
+| **requirements.txt**                  | Python package dependencies.                                                                                      |
+| **render.yaml** *(optional)*          | Deployment configuration for Render.                                                                              |
+| **Dockerfile** *(optional)*           | Docker container configuration.                                                                                   |
