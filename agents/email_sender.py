@@ -1,7 +1,7 @@
 """
 Email Sender Agent
 
-Sends the final email using Gmail.
+Send the final email using Gmail.
 """
 
 from datetime import datetime
@@ -53,49 +53,54 @@ def email_sender(state):
         # =====================================================
 
         response = send_email(
-
             to_email=to_email,
-
             subject=f"Re: {subject}",
-
             body=body,
-
-            thread_id=thread_id
-
+            thread_id=thread_id,
         )
 
         # =====================================================
-        # Update Workflow State
+        # Success
         # =====================================================
 
         state["send_status"] = "Sent"
-
         state["message_id"] = response.get("id")
-
-        state["thread_id"] = response.get(
-            "threadId",
-            thread_id
-        )
-
-        state["sent_time"] = datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-
+        state["thread_id"] = response.get("threadId", thread_id)
+        state["sent_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         state["send_error"] = None
 
         logger.info("Email sent successfully.")
         logger.info(f"Message ID : {state['message_id']}")
 
+    except FileNotFoundError:
+
+        logger.warning("Gmail credentials not configured.")
+        logger.warning("Skipping email sending.")
+
+        state["send_status"] = "Skipped"
+        state["message_id"] = None
+        state["thread_id"] = thread_id
+        state["sent_time"] = None
+        state["send_error"] = "Gmail credentials not configured."
+
+    except ValueError as e:
+
+        logger.warning(str(e))
+
+        state["send_status"] = "Skipped"
+        state["message_id"] = None
+        state["thread_id"] = thread_id
+        state["sent_time"] = None
+        state["send_error"] = str(e)
+
     except Exception as e:
 
-        logger.exception("Email sending failed.")
+        logger.exception("Unexpected error while sending email.")
 
         state["send_status"] = "Failed"
-
         state["message_id"] = None
-
+        state["thread_id"] = thread_id
         state["sent_time"] = None
-
         state["send_error"] = str(e)
 
     logger.info("=" * 60)
