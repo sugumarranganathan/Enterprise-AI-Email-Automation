@@ -75,19 +75,28 @@ if not client.collection_exists(settings.QDRANT_COLLECTION):
 print(f"✅ Collection Found : {settings.QDRANT_COLLECTION}")
 
 # =====================================================
-# Upload to Qdrant
+# Connect to Existing Collection
 # =====================================================
 
 print("=" * 60)
-print("Uploading embeddings to Qdrant...")
+print("Connecting to Qdrant...")
 print("=" * 60)
 
-vectorstore = QdrantVectorStore.from_documents(
-    documents=chunks,
-    embedding=embeddings,
+vectorstore = QdrantVectorStore(
     client=client,
     collection_name=settings.QDRANT_COLLECTION,
+    embedding=embeddings,
 )
+
+# =====================================================
+# Upload Documents
+# =====================================================
+
+print("=" * 60)
+print("Uploading embeddings...")
+print("=" * 60)
+
+ids = vectorstore.add_documents(chunks)
 
 print("=" * 60)
 print("🎉 Indexing Completed Successfully!")
@@ -96,6 +105,15 @@ print("=" * 60)
 print(f"Collection : {settings.QDRANT_COLLECTION}")
 print(f"Documents  : {len(documents)}")
 print(f"Chunks     : {len(chunks)}")
-print(f"Vector DB  : {vectorstore}")
+print(f"Uploaded   : {len(ids)} vectors")
+
+info = client.get_collection(settings.QDRANT_COLLECTION)
+
+print()
+print("Collection Statistics")
+print("-" * 60)
+print(f"Points          : {info.points_count}")
+print(f"Indexed Vectors : {info.indexed_vectors_count}")
+print(f"Status          : {info.status}")
 
 print("=" * 60)
