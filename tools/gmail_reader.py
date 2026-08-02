@@ -39,7 +39,6 @@ def read_latest_email():
     headers = message["payload"]["headers"]
 
     subject = ""
-
     sender = ""
 
     for h in headers:
@@ -47,7 +46,7 @@ def read_latest_email():
         if h["name"] == "Subject":
             subject = h["value"]
 
-        if h["name"] == "From":
+        elif h["name"] == "From":
             sender = h["value"]
 
     body = ""
@@ -60,11 +59,13 @@ def read_latest_email():
 
             if part.get("mimeType") == "text/plain":
 
-                data = part["body"]["data"]
+                data = part["body"].get("data")
 
-                body = base64.urlsafe_b64decode(
-                    data
-                ).decode()
+                if data:
+
+                    body = base64.urlsafe_b64decode(
+                        data
+                    ).decode()
 
                 break
 
@@ -82,11 +83,8 @@ def read_latest_email():
 
         "email": body,
 
+        "thread_id": message.get("threadId"),
 
-       "thread_id": message["threadId"],
-
-       "message_id": message["id"]
-
-}
+        "message_id": message.get("id")
 
     }
