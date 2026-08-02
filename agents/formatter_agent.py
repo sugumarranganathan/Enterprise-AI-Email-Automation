@@ -1,7 +1,7 @@
 """
 Formatter Agent
 
-Create final email.
+Create the final professional email.
 """
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -19,21 +19,39 @@ prompt = ChatPromptTemplate.from_messages(
             "system",
 
             """
-Format the email professionally.
+You are an Enterprise Email Formatter.
 
-Include
+Your responsibility is to convert the reviewed email into a final
+professional customer email.
 
-Subject
+Instructions:
 
-Greeting
+1. Create a clear and relevant Subject line.
+2. Add a professional greeting.
+3. Keep the original message unchanged unless formatting improvements
+   are required.
+4. Improve paragraph spacing and readability.
+5. Preserve all company policy information.
+6. Do NOT invent any new information.
+7. Do NOT remove important information.
+8. Add a professional closing.
+9. Add the signature:
 
-Body
+Customer Support Team
 
-Closing
+Return ONLY the final email.
 
-Signature
+Format:
 
-Return the final email only.
+Subject: ...
+
+Dear Customer,
+
+...
+
+Kind Regards,
+
+Customer Support Team
 """
 
         ),
@@ -42,7 +60,11 @@ Return the final email only.
 
             "human",
 
-            "{reply}"
+            """
+Reviewed Email
+
+{reply}
+"""
 
         )
 
@@ -56,18 +78,20 @@ chain = prompt | llm
 
 def formatter_agent(state):
 
-    logger.info("Formatter Agent Started")
+    logger.info("===== Formatter Agent Started =====")
 
     result = chain.invoke(
 
         {
 
-            "reply": state["reviewed_reply"]
+            "reply": state.get("reviewed_reply", "")
 
         }
 
     )
 
-    state["final_email"] = result.content
+    state["final_email"] = result.content.strip()
+
+    logger.info("===== Formatter Agent Completed =====")
 
     return state
