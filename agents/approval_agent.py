@@ -1,5 +1,8 @@
 """
 Human Approval Agent
+
+Determine whether an email can be sent automatically
+or requires human approval.
 """
 
 from utils.logger import logger
@@ -7,22 +10,49 @@ from utils.logger import logger
 
 def approval_agent(state):
 
-    logger.info("Approval Agent Started")
+    logger.info("===== Approval Agent Started =====")
 
-    """
-    Later this will connect to
+    priority = state.get("priority", "Medium")
+    sentiment = state.get("sentiment", "Neutral")
+    intent = state.get("intent", "").lower()
 
-    Gradio
+    approval_status = "Approved"
+    auto_send = True
+    reason = "Approved for automatic sending."
 
-    FastAPI
+    # High priority emails
+    if priority.lower() == "high":
+        approval_status = "Pending Human Approval"
+        auto_send = False
+        reason = "High priority email."
 
-    Dashboard
+    # Negative customer sentiment
+    elif sentiment.lower() == "negative":
+        approval_status = "Pending Human Approval"
+        auto_send = False
+        reason = "Negative customer sentiment."
 
-    Human Click
+    # Sensitive requests
+    elif any(keyword in intent for keyword in [
+        "refund",
+        "complaint",
+        "legal",
+        "lawsuit",
+        "escalation",
+        "compensation"
+    ]):
+        approval_status = "Pending Human Approval"
+        auto_send = False
+        reason = "Sensitive customer request."
 
-    Approve / Reject
-    """
+    state["approval_status"] = approval_status
+    state["auto_send"] = auto_send
+    state["approval_reason"] = reason
 
-    state["approval_status"] = "Approved"
+    logger.info(f"Approval Status : {approval_status}")
+    logger.info(f"Auto Send       : {auto_send}")
+    logger.info(f"Reason          : {reason}")
+
+    logger.info("===== Approval Agent Completed =====")
 
     return state
