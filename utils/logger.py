@@ -1,7 +1,5 @@
 """
-Application Logger
-
-Used by all agents and workflow modules.
+Enterprise AI Logger
 """
 
 import logging
@@ -26,12 +24,4 @@ logging.basicConfig(
 # =====================================================
 
 logger = logging.getLogger("EnterpriseAI")
-
 logger.setLevel(logging.INFO)
-
-# =====================================================
-# Test
-# =====================================================
-
-if __name__ == "__main__":
-    logger.info("Logger initialized successfully.")
