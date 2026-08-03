@@ -8,14 +8,16 @@ gradio>=5.40.0
 # ==========================
 # AI Framework
 # ==========================
-langgraph
-langchain
-langchain-community
+langgraph>=0.6.0
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+langchain-groq>=0.3.0
 
 # ==========================
 # LLM
 # ==========================
-groq
+groq>=0.31.0
 
 # ==========================
 # Gmail API
@@ -36,6 +38,16 @@ qdrant-client
 sentence-transformers
 
 # ==========================
+# PDF Support
+# ==========================
+pypdf
+
+# ==========================
+# Tokenizer
+# ==========================
+tiktoken
+
+# ==========================
 # Environment
 # ==========================
 python-dotenv
@@ -49,7 +61,7 @@ pandas
 numpy
 
 # ==========================
-# Optional (if your project imports them)
+# Optional
 # ==========================
 tqdm
 Pillow
