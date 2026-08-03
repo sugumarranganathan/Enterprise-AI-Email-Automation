@@ -129,7 +129,7 @@ class Settings:
             missing.append("GROQ_API_KEY")
 
         if not self.QDRANT_URL:
-            missing.append("QDRANT_URL")
+            missing.append("QDRANT_UR")
 
         if not self.QDRANT_API_KEY:
             missing.append("QDRANT_API_KEY")
