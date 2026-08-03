@@ -1,7 +1,9 @@
 """
+====================================================
 Gmail Reader Utility
 
 Read the latest email from Gmail.
+====================================================
 """
 
 import base64
@@ -13,6 +15,9 @@ from utils.logger import logger
 
 
 def read_latest_email():
+    """
+    Read the latest email from Gmail.
+    """
 
     logger.info("=" * 60)
     logger.info("===== Gmail Reader Started =====")
@@ -101,9 +106,9 @@ def read_latest_email():
 
                     break
 
-        elif "body" in payload:
+        else:
 
-            data = payload["body"].get("data")
+            data = payload.get("body", {}).get("data")
 
             if data:
 
@@ -118,17 +123,11 @@ def read_latest_email():
         logger.info("=" * 60)
 
         return {
-
             "sender": sender,
-
             "subject": subject,
-
             "email": body,
-
             "thread_id": message.get("threadId"),
-
             "message_id": message.get("id")
-
         }
 
     except FileNotFoundError:
@@ -136,18 +135,22 @@ def read_latest_email():
         logger.warning("Gmail credentials not configured.")
         logger.warning("Skipping Gmail Reader.")
 
-        logger.info("=" * 60)
-        logger.info("===== Gmail Reader Completed =====")
-        logger.info("=" * 60)
-
         return None
 
-    except Exception as e:
+    except Exception:
 
         logger.exception("Failed to read Gmail.")
 
-        logger.info("=" * 60)
-        logger.info("===== Gmail Reader Completed =====")
-        logger.info("=" * 60)
-
         return None
+
+
+# =====================================================
+# Backward Compatibility
+# =====================================================
+
+def read_emails():
+    """
+    Alias for older code.
+    Keeps existing imports working.
+    """
+    return read_latest_email()
