@@ -1,6 +1,6 @@
 """
 ====================================================
-Qdrant Cloud Connection
+Qdrant Vector Store
 
 Supports:
 - Google Colab
@@ -9,67 +9,34 @@ Supports:
 ====================================================
 """
 
-from qdrant_client import QdrantClient
+from langchain_qdrant import QdrantVectorStore
+
+from rag.embeddings import embeddings
+from tools.qdrant_tool import client
 from utils.config import settings
 
 
 # =====================================================
-# Validate Configuration
+# Create Vector Store
 # =====================================================
 
-if not settings.QDRANT_URL:
-    raise ValueError(
-        "QDRANT_URL is missing. Please configure it in Colab Secrets, "
-        ".env, or Render Environment Variables."
-    )
-
-if not settings.QDRANT_API_KEY:
-    raise ValueError(
-        "QDRANT_API_KEY is missing. Please configure it in Colab Secrets, "
-        ".env, or Render Environment Variables."
-    )
-
-
-# =====================================================
-# Create Qdrant Client
-# =====================================================
-
-client = QdrantClient(
-    url=settings.QDRANT_URL,
-    api_key=settings.QDRANT_API_KEY,
-    prefer_grpc=False,
-    check_compatibility=False,
-    timeout=60,
+vectorstore = QdrantVectorStore(
+    client=client,
+    collection_name=settings.QDRANT_COLLECTION,
+    embedding=embeddings,
 )
 
 
 # =====================================================
-# Test Connection (Optional)
+# Retriever
 # =====================================================
 
-def test_connection():
-    """
-    Test connection to Qdrant Cloud.
-    Call this manually for debugging.
-    """
-
-    try:
-        collections = client.get_collections()
-
-        print("✅ Connected to Qdrant Cloud")
-        print(
-            "Collections:",
-            [c.name for c in collections.collections]
-        )
-
-        return True
-
-    except Exception as e:
-
-        print("❌ Qdrant Connection Failed")
-        print(e)
-
-        return False
+retriever = vectorstore.as_retriever(
+    search_type="similarity",
+    search_kwargs={
+        "k": 3
+    }
+)
 
 
 # =====================================================
@@ -77,4 +44,14 @@ def test_connection():
 # =====================================================
 
 if __name__ == "__main__":
-    test_connection()
+
+    print("✅ Vector Store Loaded")
+    print("Collection :", settings.QDRANT_COLLECTION)
+
+    try:
+        docs = retriever.invoke("test")
+        print(f"Retrieved {len(docs)} documents")
+
+    except Exception as e:
+        print("Retriever Test Failed")
+        print(e)
