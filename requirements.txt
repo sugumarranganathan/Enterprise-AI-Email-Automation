@@ -13,6 +13,7 @@ langchain>=0.3.0
 langchain-core>=0.3.0
 langchain-community>=0.3.0
 langchain-groq>=0.3.0
+langchain-qdrant>=0.2.0
 
 # ==========================
 # LLM
@@ -30,7 +31,7 @@ google-auth-httplib2
 # ==========================
 # Vector Database
 # ==========================
-qdrant-client
+qdrant-client>=1.10.0
 
 # ==========================
 # Embeddings
@@ -65,9 +66,3 @@ numpy
 # ==========================
 tqdm
 Pillow
-
-# ==========================
-# Vector Database
-# ==========================
-qdrant-client>=1.10.0
-langchain-qdrant>=0.2.0
