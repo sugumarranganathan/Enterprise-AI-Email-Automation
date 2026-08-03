@@ -1,74 +1,91 @@
 """
+====================================================
 Gmail OAuth Authentication
+Render Production Version
+
+Author : Sugumar R
+====================================================
 """
 
 import os
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 
+# =====================================================
+# Gmail Scopes
+# =====================================================
 
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/gmail.send",
 ]
 
+# =====================================================
+# Gmail Credentials
+# =====================================================
 
 def get_gmail_credentials():
+    """
+    Load Gmail OAuth credentials.
+
+    Production Flow
+    ----------------
+    1. Read token.json
+    2. Refresh automatically if expired
+    3. Never open a browser
+    """
 
     token_file = "token.json"
     credentials_file = "credentials.json"
 
-    creds = None
+    # -------------------------------------------------
+    # Check Required Files
+    # -------------------------------------------------
 
-    # -----------------------------------------------------
-    # Load Existing Token
-    # -----------------------------------------------------
-
-    if os.path.exists(token_file):
-
-        creds = Credentials.from_authorized_user_file(
-            token_file,
-            SCOPES
+    if not os.path.exists(credentials_file):
+        raise FileNotFoundError(
+            "\n"
+            "credentials.json not found.\n"
+            "Place credentials.json in the project root "
+            "before deploying to Render."
         )
 
-    # -----------------------------------------------------
-    # Refresh or Login
-    # -----------------------------------------------------
+    if not os.path.exists(token_file):
+        raise FileNotFoundError(
+            "\n"
+            "token.json not found.\n\n"
+            "Generate token.json locally first.\n"
+            "Then upload it with your project."
+        )
 
-    if not creds or not creds.valid:
+    # -------------------------------------------------
+    # Load Token
+    # -------------------------------------------------
 
-        if creds and creds.expired and creds.refresh_token:
+    creds = Credentials.from_authorized_user_file(
+        token_file,
+        SCOPES,
+    )
 
-            creds.refresh(Request())
+    # -------------------------------------------------
+    # Refresh Token
+    # -------------------------------------------------
 
-        else:
+    if creds.expired and creds.refresh_token:
 
-            if not os.path.exists(credentials_file):
-
-                raise FileNotFoundError(
-                    "\n"
-                    "credentials.json not found.\n\n"
-                    "Download your OAuth Client credentials from\n"
-                    "Google Cloud Console and place\n"
-                    "credentials.json in the project root folder.\n"
-                )
-
-            flow = InstalledAppFlow.from_client_secrets_file(
-                credentials_file,
-                SCOPES
-            )
-
-            creds = flow.run_local_server(
-                port=0,
-                open_browser=True
-            )
-
-        # Save Token
+        creds.refresh(Request())
 
         with open(token_file, "w") as token:
-
             token.write(creds.to_json())
+
+    # -------------------------------------------------
+    # Validate
+    # -------------------------------------------------
+
+    if not creds.valid:
+        raise RuntimeError(
+            "Invalid Gmail OAuth credentials."
+        )
 
     return creds
