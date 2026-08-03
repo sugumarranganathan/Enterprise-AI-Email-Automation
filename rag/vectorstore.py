@@ -18,14 +18,20 @@ from utils.config import settings
 # =====================================================
 
 if not settings.QDRANT_URL:
-    raise ValueError("QDRANT_URL is missing.")
+    raise ValueError(
+        "QDRANT_URL is missing. Please configure it in Colab Secrets, "
+        ".env, or Render Environment Variables."
+    )
 
 if not settings.QDRANT_API_KEY:
-    raise ValueError("QDRANT_API_KEY is missing.")
+    raise ValueError(
+        "QDRANT_API_KEY is missing. Please configure it in Colab Secrets, "
+        ".env, or Render Environment Variables."
+    )
 
 
 # =====================================================
-# Qdrant Client
+# Create Qdrant Client
 # =====================================================
 
 client = QdrantClient(
@@ -38,17 +44,37 @@ client = QdrantClient(
 
 
 # =====================================================
-# Test Connection
+# Test Connection (Optional)
 # =====================================================
 
-try:
+def test_connection():
+    """
+    Test connection to Qdrant Cloud.
+    Call this manually for debugging.
+    """
 
-    collections = client.get_collections()
+    try:
+        collections = client.get_collections()
 
-    print("✅ Connected to Qdrant Cloud")
-    print("Collections:", [c.name for c in collections.collections])
+        print("✅ Connected to Qdrant Cloud")
+        print(
+            "Collections:",
+            [c.name for c in collections.collections]
+        )
 
-except Exception as e:
+        return True
 
-    print("❌ Failed to connect to Qdrant Cloud")
-    raise e
+    except Exception as e:
+
+        print("❌ Qdrant Connection Failed")
+        print(e)
+
+        return False
+
+
+# =====================================================
+# Manual Test
+# =====================================================
+
+if __name__ == "__main__":
+    test_connection()
