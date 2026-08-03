@@ -27,65 +27,55 @@ SCOPES = [
 
 def get_gmail_credentials():
     """
-    Load Gmail OAuth credentials.
+    Load Gmail OAuth credentials from Render
+    Environment Variables.
 
-    Production Flow
-    ----------------
-    1. Read token.json
-    2. Refresh automatically if expired
-    3. Never open a browser
+    Required Environment Variables
+    ------------------------------
+    GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_SECRET
+    GOOGLE_REFRESH_TOKEN
+
+    Access tokens are automatically refreshed.
     """
 
-    token_file = "token.json"
-    credentials_file = "credentials.json"
+    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+    refresh_token = os.getenv("GOOGLE_REFRESH_TOKEN")
 
-    # -------------------------------------------------
-    # Check Required Files
-    # -------------------------------------------------
-
-    if not os.path.exists(credentials_file):
-        raise FileNotFoundError(
-            "\n"
-            "credentials.json not found.\n"
-            "Place credentials.json in the project root "
-            "before deploying to Render."
+    if not client_id:
+        raise RuntimeError(
+            "GOOGLE_CLIENT_ID environment variable not found."
         )
 
-    if not os.path.exists(token_file):
-        raise FileNotFoundError(
-            "\n"
-            "token.json not found.\n\n"
-            "Generate token.json locally first.\n"
-            "Then upload it with your project."
+    if not client_secret:
+        raise RuntimeError(
+            "GOOGLE_CLIENT_SECRET environment variable not found."
         )
 
-    # -------------------------------------------------
-    # Load Token
-    # -------------------------------------------------
+    if not refresh_token:
+        raise RuntimeError(
+            "GOOGLE_REFRESH_TOKEN environment variable not found."
+        )
 
-    creds = Credentials.from_authorized_user_file(
-        token_file,
-        SCOPES,
+    creds = Credentials(
+        token=None,
+        refresh_token=refresh_token,
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=client_id,
+        client_secret=client_secret,
+        scopes=SCOPES,
     )
 
-    # -------------------------------------------------
-    # Refresh Token
-    # -------------------------------------------------
+    # -----------------------------------------------------
+    # Refresh Access Token
+    # -----------------------------------------------------
 
-    if creds.expired and creds.refresh_token:
-
-        creds.refresh(Request())
-
-        with open(token_file, "w") as token:
-            token.write(creds.to_json())
-
-    # -------------------------------------------------
-    # Validate
-    # -------------------------------------------------
+    creds.refresh(Request())
 
     if not creds.valid:
         raise RuntimeError(
-            "Invalid Gmail OAuth credentials."
+            "Failed to refresh Gmail access token."
         )
 
     return creds
