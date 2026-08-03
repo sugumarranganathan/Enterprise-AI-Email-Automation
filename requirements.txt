@@ -65,3 +65,9 @@ numpy
 # ==========================
 tqdm
 Pillow
+
+# ==========================
+# Vector Database
+# ==========================
+qdrant-client>=1.10.0
+langchain-qdrant>=0.2.0
