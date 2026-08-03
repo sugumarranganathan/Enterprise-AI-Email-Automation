@@ -28,6 +28,7 @@ css = """
     max-width:1500px !important;
     margin:auto;
     padding:20px;
+    background:#F5F7FA;
 }
 
 .main-title{
@@ -45,17 +46,15 @@ css = """
 }
 
 .dashboard-card{
-    border:1px solid #E5E5E5;
     border-radius:10px;
-    padding:15px;
-    text-align:center;
+    border:1px solid #E0E0E0;
     background:white;
+    padding:15px;
 }
 
 .footer{
     text-align:center;
     color:gray;
-    font-size:13px;
     margin-top:20px;
 }
 """
@@ -67,7 +66,7 @@ css = """
 
 def dashboard_card(title, value, emoji="📌"):
 
-    if not value:
+    if value is None or value == "":
         value = "-"
 
     return f"""
@@ -104,8 +103,6 @@ def workflow_status():
 
 ✅ Reviewer Agent
 
-✅ Formatter Agent
-
 ✅ Approval Agent
 
 ✅ Email Sender
@@ -123,11 +120,11 @@ examples = [
 [
 """Hello,
 
-I received my order yesterday.
+I received my laptop yesterday.
 
-Unfortunately the product arrived damaged.
+Unfortunately the screen is damaged.
 
-I would like a refund.
+Please arrange a replacement.
 
 Thanks,
 John"""
@@ -136,9 +133,9 @@ John"""
 [
 """Hello,
 
-My parcel has not been delivered.
+I have not received my order.
 
-Please check the shipment.
+Please check the delivery status.
 
 Regards,
 David"""
@@ -147,18 +144,19 @@ David"""
 [
 """Hello,
 
-Please cancel my order before shipping.
+Please cancel my subscription immediately.
 
-Thanks,
+Thank you.
+
 Sarah"""
 ],
 
 [
 """Hello,
 
-The laptop is still under warranty.
+My product is under warranty.
 
-The screen stopped working.
+It stopped working yesterday.
 
 Please help.
 
@@ -170,49 +168,39 @@ James"""
 
 
 # =====================================================
-# Clear Function
+# Clear All
 # =====================================================
 
 def clear_all():
 
     return (
 
-        "",
+        "",         # email
 
-        "",
+        "",         # summary
+        "",         # intent
 
-        "",
+        "",         # category
+        "",         # priority
+        "",         # sentiment
 
-        "",
+        "No knowledge retrieved.",
+        "No policy available.",
 
-        "",
+        "",         # approval
+        "",         # send status
 
-        "",
+        "No email generated.",
 
-        "",
-
-        "",
-
-        "",
-
-        "",
-
-        "",
-
-        dashboard_card("Category",""),
-
-        dashboard_card("Priority",""),
-
-        dashboard_card("Sentiment",""),
-
-        dashboard_card("Approval",""),
-
-        dashboard_card("Send Status",""),
+        dashboard_card("Category","", "📂"),
+        dashboard_card("Priority","", "🚨"),
+        dashboard_card("Sentiment","", "😊"),
+        dashboard_card("Approval","", "✅"),
+        dashboard_card("Send Status","", "📧"),
 
         workflow_status(),
 
         ""
-
     )
 
 
@@ -223,7 +211,6 @@ def clear_all():
 def process_email(email):
 
     if not email.strip():
-
         raise gr.Error("Please enter customer email.")
 
     try:
@@ -232,37 +219,30 @@ def process_email(email):
 
         state = {
 
-            "sender":"customer@example.com",
-
-            "subject":"Customer Email",
-
-            "email":email
+            "sender": "customer@example.com",
+            "subject": "Customer Email",
+            "email": email
 
         }
 
         result = graph.invoke(state)
 
-        elapsed = round(time.time()-start,2)
+        elapsed = round(time.time() - start, 2)
 
         return (
 
             result.get("summary",""),
-
             result.get("intent",""),
 
             result.get("category",""),
-
             result.get("priority",""),
-
             result.get("sentiment",""),
 
-            result.get("knowledge",""),
+            result.get("knowledge","No knowledge found."),
+            result.get("policy_result","No policy found."),
 
-            result.get("policy_result",""),
-
-            result.get("approval_status",""),
-
-            result.get("send_status",""),
+            result.get("approval_status","Pending"),
+            result.get("send_status","Not Sent"),
 
             result.get("final_email",""),
 
@@ -298,7 +278,7 @@ def process_email(email):
 
             workflow_status(),
 
-            f"⏱ Completed in {elapsed} sec"
+            f"⏱ Completed in {elapsed} seconds"
 
         )
 
@@ -308,439 +288,263 @@ def process_email(email):
 
         raise gr.Error("Workflow execution failed.")
 
-
 # =====================================================
-# Professional UI
+# Professional Gradio UI
 # =====================================================
 
 with gr.Blocks(
-
-    title="Enterprise AI Email Automation",
-
-    theme=gr.themes.Soft(),
-
-    css=css
-
+    title="Enterprise AI Email Automation"
 ) as demo:
 
-    # =================================================
-    # Header
-    # =================================================
+    gr.HTML("""
+    <div class="main-title">
+        📧 Enterprise AI Email Automation
+    </div>
 
-    gr.HTML(
+    <div class="sub-title">
+        Multi-Agent AI Email Assistant using
+        <b>LangGraph • Groq • Gmail • Qdrant</b>
+    </div>
+    """)
 
-        """
-<div class="main-title">
-
-📧 Enterprise AI Email Automation
-
-</div>
-
-<div class="sub-title">
-
-Multi-Agent AI Email Assistant using
-LangGraph • Groq • Gmail • Qdrant
-
-</div>
-
-"""
-    )
-
-    # =================================================
+    # =====================================================
     # Statistics
-    # =================================================
+    # =====================================================
 
     with gr.Row():
 
-        gr.Markdown(
-"""
+        gr.Markdown("""
 ### 🤖 AI Agents
 
 **12**
-"""
-)
+""")
 
-        gr.Markdown(
-"""
+        gr.Markdown("""
 ### 📚 Knowledge Base
 
 **Qdrant**
-"""
-)
+""")
 
-        gr.Markdown(
-"""
+        gr.Markdown("""
 ### 🧠 LLM
 
 **Groq**
-"""
-)
+""")
 
-        gr.Markdown(
-"""
+        gr.Markdown("""
 ### ⚡ Workflow
 
 **LangGraph**
-"""
-)
-
-    # =================================================
-    # Customer Email
-    # =================================================
+""")
 
     gr.Markdown("---")
+
+    # =====================================================
+    # Email Input
+    # =====================================================
 
     with gr.Row():
 
         with gr.Column(scale=6):
 
             email = gr.Textbox(
-
                 label="📩 Customer Email",
-
                 lines=18,
-
                 placeholder="Paste customer email here..."
-
             )
 
             with gr.Row():
 
                 process_btn = gr.Button(
-
                     "🚀 Process Email",
-
-                    variant="primary",
-
-                    size="lg"
-
+                    variant="primary"
                 )
 
                 clear_btn = gr.Button(
-
-                    "🧹 Clear",
-
-                    size="lg"
-
+                    "🧹 Clear"
                 )
 
         with gr.Column(scale=4):
 
             summary = gr.Textbox(
-
                 label="📝 Summary",
-
-                interactive=False,
-
-                lines=4
-
+                lines=5,
+                interactive=False
             )
 
             intent = gr.Textbox(
-
                 label="🎯 Intent",
-
                 interactive=False
-
             )
 
-    # =================================================
-    # Enterprise Dashboard
-    # =================================================
+    # =====================================================
+    # Dashboard
+    # =====================================================
 
     gr.Markdown("---")
-
     gr.Markdown("## 📊 Enterprise Dashboard")
 
     with gr.Row():
 
         category_card = gr.Markdown(
-
-            value=dashboard_card(
-
-                "Category",
-
-                "",
-
-                "📂"
-
-            )
-
+            dashboard_card("Category","","📂")
         )
 
         priority_card = gr.Markdown(
-
-            value=dashboard_card(
-
-                "Priority",
-
-                "",
-
-                "🚨"
-
-            )
-
+            dashboard_card("Priority","","🚨")
         )
 
         sentiment_card = gr.Markdown(
-
-            value=dashboard_card(
-
-                "Sentiment",
-
-                "",
-
-                "😊"
-
-            )
-
+            dashboard_card("Sentiment","","😊")
         )
 
         approval_card = gr.Markdown(
-
-            value=dashboard_card(
-
-                "Approval",
-
-                "",
-
-                "✅"
-
-            )
-
+            dashboard_card("Approval","","✅")
         )
 
         send_card = gr.Markdown(
-
-            value=dashboard_card(
-
-                "Send Status",
-
-                "",
-
-                "📧"
-
-            )
-
+            dashboard_card("Send Status","","📧")
         )
 
-    # =================================================
+    # =====================================================
     # Details
-    # =================================================
+    # =====================================================
 
     with gr.Row():
 
         category = gr.Textbox(
-
             label="📂 Category",
-
             interactive=False
-
         )
 
         priority = gr.Textbox(
-
             label="🚨 Priority",
-
             interactive=False
-
         )
 
         sentiment = gr.Textbox(
-
             label="😊 Sentiment",
-
             interactive=False
-
         )
 
         approval = gr.Textbox(
-
-            label="✅ Approval Status",
-
+            label="✅ Approval",
             interactive=False
-
         )
 
         send_status = gr.Textbox(
-
             label="📤 Send Status",
-
             interactive=False
-
         )
 
-    # =================================================
-    # Example Emails
-    # =================================================
+    # =====================================================
+    # Examples
+    # =====================================================
 
     gr.Examples(
-
         examples=examples,
-
         inputs=email,
-
-        label="📄 Example Customer Emails"
-
+        label="📄 Example Emails"
     )
 
-  # =====================================================
-# Knowledge Base
-# =====================================================
+    # =====================================================
+    # Knowledge Base
+    # =====================================================
 
-gr.Markdown("---")
+    gr.Markdown("---")
+    gr.Markdown("## 📚 Retrieved Knowledge")
 
-gr.Markdown("## 📚 Retrieved Knowledge")
+    knowledge = gr.Markdown(
+        value="No knowledge retrieved."
+    )
 
-knowledge = gr.Markdown(
+    # =====================================================
+    # Company Policy
+    # =====================================================
 
-    value="No knowledge retrieved."
+    gr.Markdown("---")
+    gr.Markdown("## 📜 Company Policy")
 
-)
+    policy = gr.Markdown(
+        value="No policy available."
+    )
 
+    # =====================================================
+    # AI Generated Email
+    # =====================================================
 
-# =====================================================
-# Company Policy
-# =====================================================
+    gr.Markdown("---")
+    gr.Markdown("## ✉️ AI Generated Email")
 
-gr.Markdown("---")
+    final_email = gr.Markdown(
+        value="No email generated."
+    )
 
-gr.Markdown("## 📜 Company Policy")
+    # =====================================================
+    # Workflow Status
+    # =====================================================
 
-policy = gr.Markdown(
+    gr.Markdown("---")
+    gr.Markdown("## 🤖 Workflow Status")
 
-    value="No policy available."
+    workflow = gr.Markdown(
+        workflow_status()
+    )
 
-)
-
-
-# =====================================================
-# AI Generated Email
-# =====================================================
-
-gr.Markdown("---")
-
-gr.Markdown("## ✉️ AI Generated Email")
-
-final_email = gr.Markdown(
-
-    value="""
-No email generated.
-"""
-)
-
-
-# =====================================================
-# Workflow Status
-# =====================================================
-
-gr.Markdown("---")
-
-gr.Markdown("## 🤖 Workflow Status")
-
-workflow = gr.Markdown(
-
-    value=workflow_status()
-
-)
-
-processing_time = gr.Markdown(
-
-    value=""
-
-)
-
+    processing_time = gr.Markdown("")
 
 # =====================================================
 # Human Approval
 # =====================================================
 
-gr.Markdown("---")
+    gr.Markdown("---")
+    gr.Markdown("## 👤 Human Approval")
 
-gr.Markdown("## 👤 Human Approval")
+    with gr.Row():
 
-with gr.Row():
+        approve_btn = gr.Button(
+            "✅ Approve",
+            variant="primary"
+        )
 
-    approve_btn = gr.Button(
+        reject_btn = gr.Button(
+            "❌ Reject",
+            variant="stop"
+        )
 
-        "✅ Approve",
-
-        variant="primary",
-
-        size="lg"
-
+    approval_result = gr.Markdown(
+        value="Waiting for approval..."
     )
-
-    reject_btn = gr.Button(
-
-        "❌ Reject",
-
-        variant="stop",
-
-        size="lg"
-
-    )
-
-
-approval_result = gr.Markdown(
-
-    value="Waiting for approval."
-
-)
 
 
 # =====================================================
 # Approval Functions
 # =====================================================
 
-def approve_email():
+    def approve_email():
 
-    return """
+        return """
+## ✅ Email Approved
 
-# ✅ Email Approved
-
-The email has been approved.
+The AI generated email has been approved.
 
 Ready to send.
-
 """
 
+    def reject_email():
 
-def reject_email():
+        return """
+## ❌ Email Rejected
 
-    return """
-
-# ❌ Email Rejected
-
-Please regenerate or modify the email.
-
+Please modify the response and regenerate.
 """
-
-
-approve_btn.click(
-
-    fn=approve_email,
-
-    outputs=approval_result
-
-)
-
-
-reject_btn.click(
-
-    fn=reject_email,
-
-    outputs=approval_result
-
-)
 
 
 # =====================================================
 # Footer
 # =====================================================
 
-gr.Markdown(
-
+    gr.Markdown(
 """
 ---
 
@@ -750,148 +554,117 @@ gr.Markdown(
 
 ### Technology Stack
 
-🤖 LangGraph
-
-🧠 Groq LLM
-
-📚 Qdrant Vector Database
-
-📧 Gmail API
-
-🎨 Gradio
+- 🤖 LangGraph
+- 🧠 Groq LLM
+- 📚 Qdrant Vector Database
+- 📧 Gmail API
+- 🎨 Gradio
 
 ---
 
 Developed by **Sugumar R**
 
 © 2026
-
 """
-)
+    )
+
 
 # =====================================================
 # Button Events
 # =====================================================
 
-process_btn.click(
+    process_btn.click(
 
-    fn=process_email,
+        fn=process_email,
 
-    inputs=[
+        inputs=[email],
 
-        email
+        outputs=[
 
-    ],
+            summary,
+            intent,
 
-    outputs=[
+            category,
+            priority,
+            sentiment,
 
-        summary,
-        intent,
+            knowledge,
+            policy,
 
-        category,
-        priority,
-        sentiment,
+            approval,
+            send_status,
 
-        knowledge,
-        policy,
+            final_email,
 
-        approval,
-        send_status,
+            category_card,
+            priority_card,
+            sentiment_card,
+            approval_card,
+            send_card,
 
-        final_email,
+            workflow,
+            processing_time
 
-        category_card,
-        priority_card,
-        sentiment_card,
-        approval_card,
-        send_card,
+        ],
 
-        workflow,
-        processing_time
+        show_progress="full"
 
-    ],
-
-    show_progress="full"
-
-)
+    )
 
 
-clear_btn.click(
+    clear_btn.click(
 
-    fn=clear_all,
+        fn=clear_all,
 
-    outputs=[
+        outputs=[
 
-        email,
+            email,
 
-        summary,
-        intent,
+            summary,
+            intent,
 
-        category,
-        priority,
-        sentiment,
+            category,
+            priority,
+            sentiment,
 
-        knowledge,
-        policy,
+            knowledge,
+            policy,
 
-        approval,
-        send_status,
+            approval,
+            send_status,
 
-        final_email,
+            final_email,
 
-        category_card,
-        priority_card,
-        sentiment_card,
-        approval_card,
-        send_card,
+            category_card,
+            priority_card,
+            sentiment_card,
+            approval_card,
+            send_card,
 
-        workflow,
-        processing_time
+            workflow,
+            processing_time
 
-    ]
+        ]
 
-)
-
-
-# =====================================================
-# Human Approval
-# =====================================================
-
-approve_btn.click(
-
-    fn=approve_email,
-
-    outputs=[
-
-        approval_result
-
-    ]
-
-)
+    )
 
 
-reject_btn.click(
+    approve_btn.click(
 
-    fn=reject_email,
+        fn=approve_email,
 
-    outputs=[
+        outputs=approval_result
 
-        approval_result
-
-    ]
-
-)
+    )
 
 
-# =====================================================
-# Queue
-# =====================================================
+    reject_btn.click(
 
-demo.queue(
+        fn=reject_email,
 
-    max_size=20
+        outputs=approval_result
 
-)
+    )
 
 
 # =====================================================
@@ -900,18 +673,23 @@ demo.queue(
 
 demo.queue(max_size=20)
 
+
 # =====================================================
-# Render Deployment
+# Launch
 # =====================================================
 
 if __name__ == "__main__":
-    demo.queue()
 
     demo.launch(
+
         server_name="0.0.0.0",
+
         server_port=7860,
-        share=True,          # Public URL for Colab
-        debug=True,
+
+        share=True,
+
         show_error=True,
-        quiet=False
+
+        debug=True
+
     )
