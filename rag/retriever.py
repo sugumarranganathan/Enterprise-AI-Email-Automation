@@ -19,9 +19,9 @@ from utils.logger import logger
 logger.info("Retriever initialized successfully.")
 
 
-def retrieve(query: str) -> str:
+def retrieve(query: str):
     """
-    Retrieve relevant knowledge from Qdrant.
+    Retrieve relevant documents from Qdrant.
 
     Parameters
     ----------
@@ -30,48 +30,61 @@ def retrieve(query: str) -> str:
 
     Returns
     -------
-    str
-        Retrieved context as a single string.
+    list
+        List of LangChain Document objects.
     """
 
     logger.info("=" * 60)
-    logger.info("🔎 Knowledge Retrieval Started")
+    logger.info("Knowledge Retrieval Started")
     logger.info("=" * 60)
 
     try:
 
-        logger.info(f"Query: {query}")
+        query = query.strip()
+
+        if not query:
+
+            logger.warning("Empty query received.")
+
+            return []
+
+        logger.info(f"Query : {query}")
 
         docs = retriever.invoke(query)
 
         logger.info(f"Retrieved {len(docs)} document(s).")
 
-        if not docs:
-
-            logger.warning("No relevant documents found.")
-
-            return "No relevant knowledge found."
-
-        context = "\n\n".join(
-
-            doc.page_content
-
-            for doc in docs
-
-        )
-
         logger.info("=" * 60)
-        logger.info("✅ Knowledge Retrieval Completed")
+        logger.info("Knowledge Retrieval Completed")
         logger.info("=" * 60)
 
-        return context
+        return docs
 
-    except Exception as e:
+    except Exception:
 
         logger.exception("Knowledge retrieval failed.")
 
         logger.info("=" * 60)
-        logger.info("❌ Knowledge Retrieval Failed")
+        logger.info("Knowledge Retrieval Failed")
         logger.info("=" * 60)
 
-        return "Knowledge retrieval failed."
+        return []
+
+
+# =====================================================
+# Manual Test
+# =====================================================
+
+if __name__ == "__main__":
+
+    documents = retrieve("refund policy")
+
+    print("=" * 60)
+
+    print(f"Retrieved : {len(documents)} document(s)")
+
+    print("=" * 60)
+
+    if documents:
+
+        print(documents[0].page_content)
