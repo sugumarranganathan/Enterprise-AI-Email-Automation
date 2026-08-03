@@ -11,6 +11,7 @@ import gradio as gr
 
 from app import demo
 from health import router as health_router
+from gmail.webhook import router as gmail_router
 
 app = FastAPI(
     title="Enterprise AI Email Automation",
@@ -18,9 +19,10 @@ app = FastAPI(
 )
 
 app.include_router(health_router)
+app.include_router(gmail_router)
 
 app = gr.mount_gradio_app(
     app,
     demo,
-    path="/app"
+    path="/"
 )
