@@ -1,7 +1,10 @@
 """
+====================================================
 Knowledge Agent
 
-Retrieve relevant knowledge from the Qdrant Vector Database.
+Retrieves relevant knowledge from
+Qdrant Vector Database.
+====================================================
 """
 
 from rag.retriever import retrieve
@@ -9,47 +12,70 @@ from utils.logger import logger
 
 
 def knowledge_agent(state):
+    """
+    Retrieve company knowledge from Qdrant
+    and store it in the workflow state.
+    """
 
     logger.info("=" * 60)
-    logger.info("===== Knowledge Agent Started =====")
+    logger.info("Knowledge Agent Started")
     logger.info("=" * 60)
 
     # =====================================================
-    # Query
+    # Build Query
     # =====================================================
 
     query = (
         state.get("intent")
         or state.get("email")
+        or state.get("summary")
         or ""
-    )
+    ).strip()
 
     if not query:
 
-        logger.warning("No query available for retrieval.")
+        logger.warning("No query available.")
 
         state["knowledge"] = ""
         state["retrieved_context"] = ""
+        state["knowledge_docs"] = []
 
         logger.info("=" * 60)
-        logger.info("===== Knowledge Agent Completed =====")
+        logger.info("Knowledge Agent Completed")
         logger.info("=" * 60)
 
         return state
 
-    logger.info(f"Query : {query}")
+    logger.info(f"Query: {query}")
 
     # =====================================================
     # Retrieve Documents
     # =====================================================
 
-    docs = retrieve(query)
+    try:
+
+        docs = retrieve(query)
+
+    except Exception:
+
+        logger.exception("Knowledge retrieval failed.")
+
+        docs = []
+
+    # =====================================================
+    # Build Context
+    # =====================================================
 
     if docs:
 
         context = "\n\n".join(
+
             doc.page_content
+
             for doc in docs
+
+            if hasattr(doc, "page_content")
+
         )
 
     else:
@@ -67,7 +93,7 @@ def knowledge_agent(state):
     logger.info(f"Retrieved Documents : {len(docs)}")
 
     logger.info("=" * 60)
-    logger.info("===== Knowledge Agent Completed =====")
+    logger.info("Knowledge Agent Completed")
     logger.info("=" * 60)
 
     return state
