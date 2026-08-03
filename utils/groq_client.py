@@ -2,18 +2,19 @@
 Shared Groq Client
 """
 
-from langchain_groq import ChatGroq
+import os
 
 from utils.config import settings
+from langchain_groq import ChatGroq
 
+# Export the API key to the environment
+if settings.GROQ_API_KEY:
+    os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
+else:
+    raise ValueError("GROQ_API_KEY not found.")
 
 llm = ChatGroq(
-
-    groq_api_key=settings.GROQ_API_KEY,
-
     model="llama-3.3-70b-versatile",
-
     temperature=0.2,
-
-    max_tokens=2048
+    max_tokens=2048,
 )
