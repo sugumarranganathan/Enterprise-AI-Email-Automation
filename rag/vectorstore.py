@@ -21,9 +21,13 @@ from utils.config import settings
 # =====================================================
 
 vectorstore = QdrantVectorStore(
+
     client=client,
+
     collection_name=settings.QDRANT_COLLECTION,
-    embedding=embeddings,
+
+    embedding=embeddings
+
 )
 
 
@@ -32,11 +36,47 @@ vectorstore = QdrantVectorStore(
 # =====================================================
 
 retriever = vectorstore.as_retriever(
+
     search_type="similarity",
+
     search_kwargs={
+
         "k": 3
+
     }
+
 )
+
+
+# =====================================================
+# Helper Function
+# =====================================================
+
+def similarity_search(query: str, k: int = 3):
+    """
+    Search similar documents.
+
+    Parameters
+    ----------
+    query : str
+        User query.
+
+    k : int
+        Number of documents.
+
+    Returns
+    -------
+    list
+        LangChain Document objects.
+    """
+
+    return vectorstore.similarity_search(
+
+        query,
+
+        k=k
+
+    )
 
 
 # =====================================================
@@ -45,13 +85,26 @@ retriever = vectorstore.as_retriever(
 
 if __name__ == "__main__":
 
-    print("✅ Vector Store Loaded")
+    print("=" * 60)
+    print("Qdrant Vector Store")
+    print("=" * 60)
+
     print("Collection :", settings.QDRANT_COLLECTION)
 
     try:
-        docs = retriever.invoke("test")
-        print(f"Retrieved {len(docs)} documents")
+
+        docs = similarity_search("test")
+
+        print(f"Retrieved {len(docs)} document(s).")
+
+        if docs:
+
+            print()
+
+            print(docs[0].page_content[:300])
 
     except Exception as e:
-        print("Retriever Test Failed")
+
+        print("Vector Store Test Failed")
+
         print(e)
