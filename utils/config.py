@@ -35,34 +35,28 @@ except ImportError:
 
 def get_secret(name: str, default=None):
     """
-    Read configuration in the following order:
+    Read secrets in the following order:
 
     1. Google Colab Secrets
     2. Environment Variables
     3. Default Value
     """
 
-    # ------------------------
-    # Google Colab
-    # ------------------------
-
+    # Google Colab Secrets
     if IS_COLAB:
         try:
             value = userdata.get(name)
 
-            if value and str(value).strip():
+            if value is not None and str(value).strip() != "":
                 return str(value).strip()
 
         except Exception:
             pass
 
-    # ------------------------
     # Environment Variables
-    # ------------------------
-
     value = os.getenv(name)
 
-    if value and str(value).strip():
+    if value is not None and str(value).strip() != "":
         return str(value).strip()
 
     return default
@@ -82,7 +76,11 @@ class Settings:
 
         self.GROQ_API_KEY = get_secret("GROQ_API_KEY")
 
-        self.QDRANT_URL = get_secret("QDRANT_URL")
+        # Support BOTH secret names
+        self.QDRANT_URL = (
+            get_secret("QDRANT_URL")
+            or get_secret("QDRANT_UR")
+        )
 
         self.QDRANT_API_KEY = get_secret("QDRANT_API_KEY")
 
@@ -105,7 +103,7 @@ class Settings:
         )
 
         # =================================================
-        # Export to Environment
+        # Export Environment Variables
         # =================================================
 
         if self.GROQ_API_KEY:
@@ -129,7 +127,7 @@ class Settings:
             missing.append("GROQ_API_KEY")
 
         if not self.QDRANT_URL:
-            missing.append("QDRANT_UR")
+            missing.append("QDRANT_URL")
 
         if not self.QDRANT_API_KEY:
             missing.append("QDRANT_API_KEY")
@@ -137,11 +135,8 @@ class Settings:
         if missing:
 
             raise ValueError(
-
                 "Missing configuration: "
-
                 + ", ".join(missing)
-
             )
 
 
@@ -150,3 +145,9 @@ class Settings:
 # =====================================================
 
 settings = Settings()
+
+# =====================================================
+# Validate Configuration
+# =====================================================
+
+settings.validate()
