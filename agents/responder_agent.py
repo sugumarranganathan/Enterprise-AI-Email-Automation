@@ -1,9 +1,20 @@
 """
+====================================================
 Responder Agent
 
-Generate a professional email reply using
-summary, intent, retrieved knowledge,
-and company policy.
+Generates a professional customer email
+using:
+
+- Summary
+- Intent
+- Retrieved Knowledge
+- Company Policy
+
+Supports:
+- Google Colab
+- Render
+- Local Development
+====================================================
 """
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -11,6 +22,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from utils.groq_client import llm
 from utils.logger import logger
 
+
+# =====================================================
+# Prompt
+# =====================================================
 
 prompt = ChatPromptTemplate.from_messages(
 
@@ -23,22 +38,44 @@ prompt = ChatPromptTemplate.from_messages(
             """
 You are an Enterprise Customer Support Email Assistant.
 
-Your job is to write a professional customer email.
+Your responsibility is to generate a
+professional customer email.
 
-Rules:
+Instructions:
 
-1. Use ONLY the provided Company Knowledge and Policy.
-2. Do NOT invent information.
-3. If information is missing, politely mention that additional verification is required.
-4. Write in a professional, friendly and empathetic tone.
-5. Never mention internal systems, AI, RAG or company documents.
-6. Do not include a subject line.
-7. Start with an appropriate greeting.
+1. Use ONLY the supplied Company Knowledge
+   and Company Policy.
+
+2. Never invent information.
+
+3. If information is unavailable,
+   politely mention that additional
+   verification is required.
+
+4. Maintain a professional,
+   empathetic and friendly tone.
+
+5. Never mention:
+   - AI
+   - LLM
+   - RAG
+   - Vector Database
+   - Internal systems
+   - Internal documentation
+
+6. Do NOT include a subject line.
+
+7. Start with a professional greeting.
+
 8. End with a professional closing.
-9. If the customer reports a problem, apologize appropriately.
-10. If company policy contains instructions, follow them exactly.
 
-The email should be well formatted and ready to send.
+9. If the customer reports a problem,
+   apologize appropriately.
+
+10. If a policy applies,
+    follow it exactly.
+
+Return ONLY the email body.
 """
 
         ),
@@ -48,19 +85,31 @@ The email should be well formatted and ready to send.
             "human",
 
             """
-Customer Email Summary:
+Customer Email Summary
+----------------------
+
 {summary}
 
-Customer Intent:
+
+Customer Intent
+---------------
+
 {intent}
 
-Relevant Company Knowledge:
+
+Company Knowledge
+-----------------
+
 {knowledge}
 
-Relevant Company Policy:
+
+Company Policy
+--------------
+
 {policy}
 
-Write a complete professional email reply.
+
+Write the complete professional email.
 """
 
         )
@@ -70,31 +119,84 @@ Write a complete professional email reply.
 )
 
 
+# =====================================================
+# Chain
+# =====================================================
+
 chain = prompt | llm
 
 
+# =====================================================
+# Responder Agent
+# =====================================================
+
 def responder_agent(state):
 
-    logger.info("===== Responder Agent Started =====")
+    logger.info("=" * 60)
+    logger.info("Responder Agent Started")
+    logger.info("=" * 60)
 
-    result = chain.invoke(
+    summary = state.get("summary", "")
+    intent = state.get("intent", "")
+    knowledge = state.get("retrieved_context", "")
+    policy = state.get("policy_result", "")
 
-        {
+    try:
 
-            "summary": state.get("summary", ""),
+        response = chain.invoke(
 
-            "intent": state.get("intent", ""),
+            {
 
-            "knowledge": state.get("retrieved_context", ""),
+                "summary": summary,
 
-            "policy": state.get("policy_result", "")
+                "intent": intent,
 
-        }
+                "knowledge": knowledge,
 
-    )
+                "policy": policy,
 
-    state["draft_reply"] = result.content
+            }
 
-    logger.info("===== Responder Agent Completed =====")
+        )
+
+        draft = response.content.strip()
+
+        if not draft:
+
+            draft = (
+                "Dear Customer,\n\n"
+                "Thank you for contacting us.\n\n"
+                "We are reviewing your request and will "
+                "get back to you shortly.\n\n"
+                "Kind regards,\n"
+                "Customer Support Team"
+            )
+
+    except Exception:
+
+        logger.exception("Responder Agent failed.")
+
+        draft = (
+            "Dear Customer,\n\n"
+            "Thank you for contacting us.\n\n"
+            "We are unable to generate a response at "
+            "this time. Our support team will review "
+            "your request and respond shortly.\n\n"
+            "Kind regards,\n"
+            "Customer Support Team"
+        )
+
+    # =====================================================
+    # Save Workflow State
+    # =====================================================
+
+    state["draft_reply"] = draft
+    state["response"] = draft
+
+    logger.info("Professional email generated successfully.")
+
+    logger.info("=" * 60)
+    logger.info("Responder Agent Completed")
+    logger.info("=" * 60)
 
     return state
