@@ -1,67 +1,77 @@
 """
+====================================================
 Retriever
 
-Retrieves relevant documents from the Qdrant vector database.
+Retrieves relevant documents from the
+Qdrant Vector Database.
+
+Supports:
+- Google Colab
+- Render
+- Local Development
+====================================================
 """
 
-from rag.vectorstore import vectorstore
+from rag.vectorstore import retriever
 from utils.logger import logger
 
 
-logger.info("Initializing Retriever...")
+logger.info("Retriever initialized successfully.")
 
 
-retriever = vectorstore.as_retriever(
-
-    search_kwargs={
-
-        "k": 3
-
-    }
-
-)
-
-
-def retrieve(question: str):
-
+def retrieve(query: str) -> str:
     """
-    Retrieve relevant documents.
+    Retrieve relevant knowledge from Qdrant.
 
     Parameters
     ----------
-    question : str
-        User query.
+    query : str
+        User question.
 
     Returns
     -------
-    list
-        List of relevant LangChain Document objects.
+    str
+        Retrieved context as a single string.
     """
 
     logger.info("=" * 60)
-    logger.info("===== Retriever Started =====")
+    logger.info("🔎 Knowledge Retrieval Started")
     logger.info("=" * 60)
 
     try:
 
-        logger.info(f"Query : {question}")
+        logger.info(f"Query: {query}")
 
-        documents = retriever.invoke(question)
+        docs = retriever.invoke(query)
 
-        logger.info(f"Retrieved {len(documents)} document(s).")
+        logger.info(f"Retrieved {len(docs)} document(s).")
+
+        if not docs:
+
+            logger.warning("No relevant documents found.")
+
+            return "No relevant knowledge found."
+
+        context = "\n\n".join(
+
+            doc.page_content
+
+            for doc in docs
+
+        )
 
         logger.info("=" * 60)
-        logger.info("===== Retriever Completed =====")
+        logger.info("✅ Knowledge Retrieval Completed")
         logger.info("=" * 60)
 
-        return documents
+        return context
 
     except Exception as e:
 
-        logger.exception("Retriever failed.")
+        logger.exception("Knowledge retrieval failed.")
 
         logger.info("=" * 60)
-        logger.info("===== Retriever Completed =====")
+        logger.info("❌ Knowledge Retrieval Failed")
         logger.info("=" * 60)
 
-        return []
+        return "Knowledge retrieval failed."
