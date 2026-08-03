@@ -904,12 +904,14 @@ demo.queue(max_size=20)
 # Render Deployment
 # =====================================================
 
-demo.queue(max_size=20)
-
 if __name__ == "__main__":
+    demo.queue()
+
     demo.launch(
         server_name="0.0.0.0",
         server_port=7860,
-        share=False,
-        show_error=True
+        share=True,          # Public URL for Colab
+        debug=True,
+        show_error=True,
+        quiet=False
     )
