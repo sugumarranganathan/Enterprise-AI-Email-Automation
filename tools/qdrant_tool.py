@@ -9,7 +9,7 @@ from utils.config import settings
 
 client = QdrantClient(
 
-    url=settings.QDRANT_URL,
+    url=settings.QDRANT_UR,
 
     api_key=settings.QDRANT_API_KEY
 
