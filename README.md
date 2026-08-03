@@ -1,8 +1,6 @@
 # 📧 Enterprise AI Email Automation
 
-https://colab.research.google.com/drive/1kZ6HhNLhvKjhOK4-CwwUSZc_V8wfRwl2#scrollTo=2-tkZy4cM37I
-
-https://2a8d48180d9511d4e1.gradio.live/
+https://colab.research.google.com/drive/18P_QhA24KVsvp3WekvJ1UkEG361etY9a#scrollTo=guxQB7t7zRLc
 
 > **Multi-Agent Enterprise Email Assistant using LangGraph, LangChain, Groq, Gmail API, Qdrant RAG, FastAPI & Gradio**
 
