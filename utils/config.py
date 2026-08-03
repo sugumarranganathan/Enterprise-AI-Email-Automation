@@ -1,20 +1,24 @@
 """
+====================================================
 Application Configuration
 
 Supports:
 - Google Colab Secrets
 - Local .env
 - Render Environment Variables
+====================================================
 """
 
 import os
 from dotenv import load_dotenv
 
+# Load local .env if available
 load_dotenv()
 
-# ---------------------------------------------------------
+
+# ====================================================
 # Detect Google Colab
-# ---------------------------------------------------------
+# ====================================================
 
 try:
     from google.colab import userdata
@@ -23,58 +27,79 @@ except ImportError:
     IS_COLAB = False
 
 
-def get_secret(name, default=None):
+# ====================================================
+# Secret Loader
+# ====================================================
+
+def get_secret(name: str, default=None):
     """
-    Read secret from:
+    Read secrets in this order:
+
     1. Google Colab Secrets
     2. Environment Variables
-    3. Default value
+    3. Default Value
     """
 
     if IS_COLAB:
         try:
             value = userdata.get(name)
-            if value:
-                return value
+
+            if value is not None and str(value).strip() != "":
+                return str(value).strip()
+
         except Exception:
             pass
 
-    return os.getenv(name, default)
+    value = os.environ.get(name)
 
+    if value is not None and str(value).strip() != "":
+        return str(value).strip()
+
+    return default
+
+
+# ====================================================
+# Settings
+# ====================================================
 
 class Settings:
 
-    # -----------------------------
-    # API Keys
-    # -----------------------------
+    def __init__(self):
 
-    GROQ_API_KEY = get_secret("GROQ_API_KEY")
+        # ----------------------------
+        # API Keys
+        # ----------------------------
 
-    # Support both names
-    QDRANT_URL = (
-        get_secret("QDRANT_URL")
-        or get_secret("QDRANT_UR")
-    )
+        self.GROQ_API_KEY = get_secret("GROQ_API_KEY")
 
-    QDRANT_API_KEY = get_secret("QDRANT_API_KEY")
+        self.QDRANT_URL = (
+            get_secret("QDRANT_URL")
+            or get_secret("QDRANT_UR")
+        )
 
-    # -----------------------------
-    # Qdrant
-    # -----------------------------
+        self.QDRANT_API_KEY = get_secret("QDRANT_API_KEY")
 
-    QDRANT_COLLECTION = get_secret(
-        "QDRANT_COLLECTION",
-        "email_knowledge"
-    )
+        # ----------------------------
+        # Qdrant
+        # ----------------------------
 
-    # -----------------------------
-    # Database
-    # -----------------------------
+        self.QDRANT_COLLECTION = get_secret(
+            "QDRANT_COLLECTION",
+            "email_knowledge"
+        )
 
-    DATABASE_URL = get_secret(
-        "DATABASE_URL",
-        "sqlite:///database/email_history.db"
-    )
+        # ----------------------------
+        # Database
+        # ----------------------------
 
+        self.DATABASE_URL = get_secret(
+            "DATABASE_URL",
+            "sqlite:///database/email_history.db"
+        )
+
+
+# ====================================================
+# Global Settings Object
+# ====================================================
 
 settings = Settings()
