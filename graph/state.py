@@ -1,17 +1,26 @@
 """
+====================================================
 Shared LangGraph State
 
-Every agent reads from and writes to this state.
+Enterprise AI Email Automation
+
+Shared workflow state used by every agent.
+
+Supports:
+- Google Colab
+- Render
+- Local Development
+====================================================
 """
 
-from typing import TypedDict
+from typing import Any, Dict, List, Optional, TypedDict
 
 
 class EmailState(TypedDict, total=False):
 
-    # --------------------------------------------------
-    # Email
-    # --------------------------------------------------
+    # ==================================================
+    # Original Email
+    # ==================================================
 
     email: str
     sender: str
@@ -20,63 +29,96 @@ class EmailState(TypedDict, total=False):
     thread_id: str
     message_id: str
 
-    # --------------------------------------------------
+    # ==================================================
     # Reader Agent
-    # --------------------------------------------------
+    # ==================================================
 
     summary: str
     intent: str
     action_items: str
 
-    # --------------------------------------------------
-    # Classification
-    # --------------------------------------------------
+    # ==================================================
+    # Classification Agent
+    # ==================================================
 
     category: str
     priority: str
     sentiment: str
 
-    # --------------------------------------------------
-    # Knowledge (RAG)
-    # --------------------------------------------------
+    # ==================================================
+    # Knowledge Agent (RAG)
+    # ==================================================
 
     knowledge: str
     retrieved_context: str
-    knowledge_docs: list
+    knowledge_docs: List[Any]
 
-    # --------------------------------------------------
-    # Policy
-    # --------------------------------------------------
+    # ==================================================
+    # Policy Agent
+    # ==================================================
 
     policy: str
     policy_result: str
 
-    # --------------------------------------------------
-    # Response
-    # --------------------------------------------------
+    # ==================================================
+    # Response Generation
+    # ==================================================
 
     draft_reply: str
+    response: str
+
     reviewed_reply: str
+
     final_email: str
 
-    # --------------------------------------------------
-    # Approval
-    # --------------------------------------------------
+    # ==================================================
+    # Approval Agent
+    # ==================================================
 
     approval_status: str
+
     approval_reason: str
+
+    approval_time: str
+
     auto_send: bool
 
-    # --------------------------------------------------
+    approved: bool
+
+    # ==================================================
     # Email Sender
-    # --------------------------------------------------
+    # ==================================================
 
     send_status: str
-    send_error: str
-    sent_time: str
 
-    # --------------------------------------------------
-    # History
-    # --------------------------------------------------
+    send_error: Optional[str]
 
-    history: dict
+    sent_time: Optional[str]
+
+    email_sent: bool
+
+    # ==================================================
+    # Gmail Response
+    # ==================================================
+
+    message_id: Optional[str]
+
+    thread_id: Optional[str]
+
+    # ==================================================
+    # History Logger
+    # ==================================================
+
+    history: Dict[str, Any]
+
+    # ==================================================
+    # Metadata
+    # ==================================================
+
+    workflow_status: str
+
+    processing_time: float
+
+    created_at: str
+
+    updated_at: str
