@@ -1,26 +1,55 @@
+# ==========================
+# Web Framework
+# ==========================
 fastapi>=0.116.0
 uvicorn[standard]>=0.35.0
 gradio>=5.40.0
 
+# ==========================
+# AI Framework
+# ==========================
 langgraph
 langchain
 langchain-community
 
+# ==========================
+# LLM
+# ==========================
+groq
+
+# ==========================
+# Gmail API
+# ==========================
 google-api-python-client
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
 
-groq
-
+# ==========================
+# Vector Database
+# ==========================
 qdrant-client
 
+# ==========================
+# Embeddings
+# ==========================
+sentence-transformers
+
+# ==========================
+# Environment
+# ==========================
 python-dotenv
 
+# ==========================
+# Utilities
+# ==========================
 requests
-
 pydantic
-
 pandas
-
 numpy
+
+# ==========================
+# Optional (if your project imports them)
+# ==========================
+tqdm
+Pillow
