@@ -904,7 +904,7 @@ demo.queue(max_size=20)
 # Render Deployment
 # =====================================================
 
-app = demo
+demo.queue(max_size=20)
 
 if __name__ == "__main__":
     demo.launch(
@@ -913,5 +913,4 @@ if __name__ == "__main__":
         share=False,
         show_error=True
     )
-
 
