@@ -1,7 +1,15 @@
 """
+====================================================
 Reviewer Agent
 
-Reviews and improves the generated email before sending.
+Reviews and improves the generated email
+before approval.
+
+Supports:
+- Google Colab
+- Render
+- Local Development
+====================================================
 """
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -9,6 +17,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from utils.groq_client import llm
 from utils.logger import logger
 
+
+# =====================================================
+# Prompt
+# =====================================================
 
 prompt = ChatPromptTemplate.from_messages(
 
@@ -21,22 +33,37 @@ prompt = ChatPromptTemplate.from_messages(
             """
 You are a Senior Enterprise Email Reviewer.
 
-Your responsibility is to review the generated customer email.
+Your responsibility is to review and improve
+the generated customer email.
 
-Review Checklist:
+Review Rules:
 
 1. Correct grammar and spelling.
-2. Improve sentence structure.
-3. Make the tone professional, polite, and empathetic.
-4. Ensure the email is clear and easy to understand.
-5. Remove repetitive or unnecessary sentences.
-6. Ensure the response is consistent with the provided company knowledge and policy.
-7. Do not invent information that is not present in the draft.
-8. Preserve the original meaning and intent.
-9. Keep the email concise but complete.
-10. Do not include explanations or review comments.
 
-Return ONLY the final improved email.
+2. Improve sentence structure.
+
+3. Maintain a professional,
+   polite and empathetic tone.
+
+4. Make the email concise
+   and easy to understand.
+
+5. Remove duplicate or
+   unnecessary sentences.
+
+6. Preserve the original meaning.
+
+7. Do NOT invent information.
+
+8. Do NOT change company policy.
+
+9. Do NOT mention AI,
+   internal systems,
+   knowledge base,
+   or review process.
+
+10. Return ONLY the final email.
+
 """
 
         ),
@@ -46,11 +73,14 @@ Return ONLY the final improved email.
             "human",
 
             """
-Review and improve the following email.
+Review the following draft email.
 
-Draft Email:
+Draft Email
+
+----------------
 
 {draft}
+
 """
 
         )
@@ -60,25 +90,71 @@ Draft Email:
 )
 
 
+# =====================================================
+# Chain
+# =====================================================
+
 chain = prompt | llm
 
 
+# =====================================================
+# Reviewer Agent
+# =====================================================
+
 def reviewer_agent(state):
 
-    logger.info("===== Reviewer Agent Started =====")
+    logger.info("=" * 60)
+    logger.info("Reviewer Agent Started")
+    logger.info("=" * 60)
 
-    result = chain.invoke(
+    draft = state.get("draft_reply", "").strip()
 
-        {
+    if not draft:
 
-            "draft": state.get("draft_reply", "")
+        logger.warning("Draft reply is empty.")
 
-        }
+        state["reviewed_reply"] = ""
 
-    )
+        logger.info("=" * 60)
+        logger.info("Reviewer Agent Completed")
+        logger.info("=" * 60)
 
-    state["reviewed_reply"] = result.content.strip()
+        return state
 
-    logger.info("===== Reviewer Agent Completed =====")
+    try:
+
+        response = chain.invoke(
+
+            {
+
+                "draft": draft
+
+            }
+
+        )
+
+        reviewed = response.content.strip()
+
+        if not reviewed:
+
+            reviewed = draft
+
+    except Exception:
+
+        logger.exception("Reviewer Agent failed.")
+
+        reviewed = draft
+
+    # =====================================================
+    # Save Workflow State
+    # =====================================================
+
+    state["reviewed_reply"] = reviewed
+
+    logger.info("Email reviewed successfully.")
+
+    logger.info("=" * 60)
+    logger.info("Reviewer Agent Completed")
+    logger.info("=" * 60)
 
     return state
